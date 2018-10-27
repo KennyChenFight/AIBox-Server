@@ -8,6 +8,7 @@ from app.modules.domain_chatbot.location import Location
 from app.modules.domain_chatbot.reminder import Reminder
 from app.modules.domain_chatbot.concern import Concern
 from app.modules.domain_chatbot.special import Special
+from app.modules.domain_chatbot.recipe import Recipe
 
 class Chatbot:
 
@@ -46,7 +47,7 @@ class Chatbot:
     # flag -> user_xxx or disease_xxx or loaction_xxx 表處於哪個模組的回覆流程中
     def response_word(self):
         # TODO 新增 or concern_done
-        if self.flag is None or self.flag=='special_done' or self.flag=='user_done' or self.flag=='emergency_done' or self.flag=='hospital_done' or self.flag=='disease_done' or self.flag=='weather_done' or self.flag=='wow_done' or self.flag=='wow_phone' or self.flag=='location_done' or self.flag=='reminder_done' or self.flag=='morning_concern_done' or self.flag=='noon_concern_done':
+        if self.flag is None or self.flag == 'recipe_done' or self.flag=='special_done' or self.flag=='user_done' or self.flag=='emergency_done' or self.flag=='hospital_done' or self.flag=='disease_done' or self.flag=='weather_done' or self.flag=='wow_done' or self.flag=='wow_phone' or self.flag=='location_done' or self.flag=='reminder_done' or self.flag=='morning_concern_done' or self.flag=='noon_concern_done':
             domain = self.choose_domain()
             if domain == 'user':
                 user = User()
@@ -71,6 +72,9 @@ class Chatbot:
             elif domain == 'wow':
                 wow = Wow(word_domain=self.word_domain, flag='wow_init')
                 return wow.response()
+            elif domain == 'recipe':
+                recipe = Recipe(word_domain=self.word_domain, flag='recipe_init')
+                return recipe.response()
             # 決定為location的模組流程，可先收集word
             elif domain == 'location':
                 location = Location(word_domain=self.word_domain, flag='location_init')
@@ -114,6 +118,9 @@ class Chatbot:
             elif 'wow' in self.flag:
                 wow = Wow(word_domain=self.word_domain, flag=self.flag)
                 return wow.response()
+            elif 'recipe' in self.flag:
+                recipe = Recipe(word_domain=self.word_domain, flag=self.flag)
+                return recipe.response()
             elif 'location' in self.flag:
                 location = Location(word_domain=self.word_domain, flag=self.flag)
                 return location.response()
@@ -137,6 +144,7 @@ class Chatbot:
         isHospital = False
         isDisease = False
         isWow = False
+        isRecipe = False
         isLocation = False
         isWeather = False
         isReminder = False
@@ -155,6 +163,8 @@ class Chatbot:
                 isDisease = True
             if data['domain'] == '天氣':
                 isWeather = True
+            if data['domain'] == '食譜' or data['domain'] == '食譜類別':
+                isRecipe = True
             if data['domain'] in magic_location:
                 isWow = True
             if data['domain'] == '地點' or data['domain'] == '城市':
@@ -174,6 +184,8 @@ class Chatbot:
             return 'disease'
         elif isWeather:
             return 'weather'
+        elif isRecipe:
+            return 'recipe'
         elif isWow:
             return 'wow'
         elif isLocation:

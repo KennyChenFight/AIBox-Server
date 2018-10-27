@@ -1,0 +1,9 @@
+{
+  "domain": "食譜類別",
+  "concepts": [
+    "中式", "西式", "日式"
+  ],
+  "pinyin_concepts": [
+    "zhong-shi", "xi-shi", "ri-shi"
+  ]
+}
